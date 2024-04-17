@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% block extra-style %}
+<style>
+  .product-image {
+      width: 100%; /* 이미지 너비를 컨테이너에 맞춤 */
+      height: auto; /* 이미지 높이를 자동으로 설정하여 비율 유지 */
+      margin-bottom: 20px;
+  }
+  .info-section {
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 5px;
+  }
+  .btn-custom {
+      background-color: #dc3545;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+  }
+  .btn-custom:hover {
+      background-color: #c82333;
+  }
+</style>
+{% endblock %}
+
+
+{% block content%}
+<div class="container mt-5">
+  <h1 class="mb-3 text-center">{{ object.name }} 주문 페이지</h1>
+
+  <div class="row">
+    <div class="col-md-6">
+        <img src="{{ object.image_url }}" alt="{{ object.name }}" class="product-image">
+    </div>
+    <div class="col-md-6 info-section">
+        <h2>{{ object.name }}</h2>
+        <h3 class="text-muted">{{ object.price }}원</h3>
+        <p>{{ object.description }}</p>
+    </div>
+  </div>
+</div>
+    <div>
+        <button type="button" class="btn btn-primary">
+            장바구니 <span class="badge bg-secondary"><span id="currentQuantity"></span></span>
+          </button>
+    </div>
+    <div  class="container">
+    <input type="hidden" id="csrfToken" value="{{csrf_token}}">
+    <button type="button" onclick="modifyCartAmount({{object.id}}, 1)" class="btn btn-danger">장바구니에 담기</button>
+    <button type="button" onclick="modifyCartAmount({{object.id}}, -1)" class="btn btn-success">장바구니에서 빼기</button>
+    </div>
+{% endblock %}
+
+
+{% block extra-script %}
+<script>
+  function getCsrfToken(){
+      return document.getElementById('csrfToken').value;
+  }
+  function modifyCartAmount(food_id, change){
+      var xhr = new XMLHttpRequest();
+          xhr.open('POST', '{% url "order:modify_cart" %}', true);
+          xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+          xhr.setRequestHeader('X-CSRFToken', getCsrfToken());
+
+          xhr.onload = function() {
+              if (this.status === 200) {
+                  var response = JSON.parse(this.responseText);
+                  document.getElementById('currentQuantity').textContent = response.newQuantity;
+                  console.log('Update successful:', response.message);
+              } else {
+                  console.error('Error updating:', this.statusText);
+              }
+          };
+          xhr.send(`foodId=${food_id}&amountChange=${change}`);
+  }
+</script>
+{% endblock %}
