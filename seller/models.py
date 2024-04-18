@@ -11,3 +11,6 @@ class Food(models.Model):
   price = models.IntegerField()
   description = models.TextField()
   image_url = models.URLField()
+
+  def __str__(self) -> str:
+    return self.name

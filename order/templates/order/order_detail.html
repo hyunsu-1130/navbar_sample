@@ -31,6 +31,12 @@
 <div class="container mt-5">
   <h1 class="mb-3 text-center">{{ object.name }} 주문 페이지</h1>
 
+  <div>
+    <button type="button" class="btn btn-primary">
+        장바구니 <span class="badge bg-secondary"><span id="totalQuantity"></span></span>
+      </button>
+  </div>
+
   <div class="row">
     <div class="col-md-6">
         <img src="{{ object.image_url }}" alt="{{ object.name }}" class="product-image">
@@ -44,7 +50,7 @@
 </div>
     <div>
         <button type="button" class="btn btn-primary">
-            장바구니 <span class="badge bg-secondary"><span id="currentQuantity"></span></span>
+            현재 수량 <span class="badge bg-secondary"><span id="currentQuantity"></span></span>
           </button>
     </div>
     <div  class="container">
@@ -69,6 +75,7 @@
           xhr.onload = function() {
               if (this.status === 200) {
                   var response = JSON.parse(this.responseText);
+                  document.getElementById('totalQuantity').textContent = response.totalQuantity;
                   document.getElementById('currentQuantity').textContent = response.newQuantity;
                   console.log('Update successful:', response.message);
               } else {
